@@ -12,3 +12,10 @@ export type TeardownLogic = Unsubscribable | Function | void;
 export interface Unsubscribable {
   unsubscribe(): void;
 }
+
+export interface PartialObserver<T> {
+  closed?: boolean;
+  next?: (value: T) => void;
+  error?: (err: any) => void;
+  complete?: () => void;
+}
