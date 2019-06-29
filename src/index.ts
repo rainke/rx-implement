@@ -14,11 +14,3 @@ const ob = new Observable<number>(function(observer) {
 
 const subscriber = ob.subscribe(console.log);
 subscriber.next(10);
-
-interface F<T> {
-  (value?: T): T;
-}
-
-const f: F<any> = x => 3;
-
-f();
