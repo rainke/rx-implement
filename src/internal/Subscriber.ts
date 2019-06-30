@@ -15,6 +15,8 @@ export class Subscriber<T> {
       default:
         if (typeof observerOrNext === 'function') {
           this._next = observerOrNext;
+          if (error) this._error = error;
+          if (complete) this._complete = complete;
         } else if (observerOrNext) {
           const { next, error, complete } = observerOrNext;
           if (next) this._next = next;

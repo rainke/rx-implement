@@ -9,22 +9,26 @@ export class Observable<T> {
   [Symbol.observable]() {
     return this;
   }
-  subscribe(observer?: PartialObserver<T>): Subscriber<T>;
+  // subscribe(observer?: PartialObserver<T>): Subscriber<T>;
+  // subscribe(
+  //   next: (value: T) => void,
+  //   error?: (error: any) => void,
+  //   complete?: () => void
+  // ): Subscriber<T>;
   subscribe(
-    next: (value: T) => void,
-    error?: (error: any) => void,
-    complete?: () => void
-  ): Subscriber<T>;
-  subscribe(
-    observerOrnext?: PartialObserver<T> | ((value: T) => void),
+    observerOrNext?: PartialObserver<T> | ((value: T) => void),
     error?: (error: any) => void,
     complete?: () => void
   ) {
     const sink =
-      observerOrnext instanceof Subscriber
-        ? observerOrnext
-        : new Subscriber(observerOrnext, error, complete);
-    this._subscribe(sink);
+      observerOrNext instanceof Subscriber
+        ? observerOrNext
+        : new Subscriber(observerOrNext, error, complete);
+    try {
+      this._subscribe(sink);
+    } catch (err) {
+      sink.error(err);
+    }
     return sink;
   }
 
