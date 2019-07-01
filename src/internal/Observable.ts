@@ -16,7 +16,7 @@ export class Observable<T> {
   //   complete?: () => void
   // ): Subscriber<T>;
   subscribe(
-    observerOrNext?: PartialObserver<T> | ((value: T) => void),
+    observerOrNext: PartialObserver<T> | ((value: T) => void),
     error?: (error: any) => void,
     complete?: () => void
   ) {
@@ -24,14 +24,20 @@ export class Observable<T> {
       observerOrNext instanceof Subscriber
         ? observerOrNext
         : new Subscriber(observerOrNext, error, complete);
-    try {
+
+    if (sink.catchError) {
+      try {
+        this._subscribe(sink);
+      } catch (err) {
+        sink.error(err);
+      }
+    } else {
       this._subscribe(sink);
-    } catch (err) {
-      sink.error(err);
     }
     return sink;
   }
 
+  // TODO: 支持多个operation
   pipe<R>(operation: OperatorFunction<T, R>) {
     return operation(this);
   }

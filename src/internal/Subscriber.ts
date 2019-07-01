@@ -2,7 +2,7 @@ import { PartialObserver } from './types';
 
 export class Subscriber<T> {
   protected isStoped = false;
-  protected destination: PartialObserver<any> | Subscriber<any>;
+  catchError: boolean = false;
   constructor(
     observerOrNext?: PartialObserver<T> | ((value: T) => void),
     error?: (e?: any) => void,
@@ -15,17 +15,22 @@ export class Subscriber<T> {
       default:
         if (typeof observerOrNext === 'function') {
           this._next = observerOrNext;
-          if (error) this._error = error;
+          error && this.setError(error);
           if (complete) this._complete = complete;
         } else if (observerOrNext) {
           const { next, error, complete } = observerOrNext;
           if (next) this._next = next;
-          if (error) this._error = error;
+          error && this.setError(error);
           if (complete) this._complete = complete;
         } else {
           throw Error('空的订阅');
         }
     }
+  }
+
+  private setError(error: (err: any) => void) {
+    this._error = error;
+    this.catchError = true;
   }
   next(value: T) {
     if (!this.isStoped) this._next(value);
