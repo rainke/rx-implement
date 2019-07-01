@@ -54,22 +54,3 @@ export class Subscriber<T> {
   _error(error: any): void {}
   _complete(): void {}
 }
-
-// class SafeSubscriber<T> extends Subscriber<T> {
-//   constructor(
-//     private _parentSubscriber: Subscriber<T>,
-//     observerOrNext?: PartialObserver<T> | ((value: T) => void),
-//     error?: (e?: any) => void,
-//     complete?: () => void
-//   ) {
-//     super();
-//     let next: (value: T) => void;
-//     if (typeof observerOrNext === "function") {
-//       next = observerOrNext;
-//     }
-//     this._next = next;
-//   }
-//   next(value: T): void {
-//     this._next(value);
-//   }
-// }

@@ -9,12 +9,7 @@ export class Observable<T> {
   [Symbol.observable]() {
     return this;
   }
-  // subscribe(observer?: PartialObserver<T>): Subscriber<T>;
-  // subscribe(
-  //   next: (value: T) => void,
-  //   error?: (error: any) => void,
-  //   complete?: () => void
-  // ): Subscriber<T>;
+
   subscribe(
     observerOrNext: PartialObserver<T> | ((value: T) => void),
     error?: (error: any) => void,
@@ -37,8 +32,29 @@ export class Observable<T> {
     return sink;
   }
 
-  // TODO: 支持多个operation
-  pipe<R>(operation: OperatorFunction<T, R>) {
-    return operation(this);
+  pipe<A>(op: OperatorFunction<T, A>): Observable<A>;
+  pipe<A, B>(op1: OperatorFunction<T, A>, op2: OperatorFunction<A, B>): Observable<B>;
+  pipe<A, B, C>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>
+  ): Observable<C>;
+  pipe<A, B, C, D>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>
+  ): Observable<D>;
+  pipe<A, B, C, D, E>(
+    op1: OperatorFunction<T, A>,
+    op2: OperatorFunction<A, B>,
+    op3: OperatorFunction<B, C>,
+    op4: OperatorFunction<C, D>,
+    op5: OperatorFunction<D, E>
+  ): Observable<E>;
+  pipe(...operations: OperatorFunction<any, any>[]) {
+    return operations.reduce(function(prev, next) {
+      return next(prev);
+    }, this);
   }
 }
