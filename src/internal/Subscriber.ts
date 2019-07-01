@@ -4,28 +4,34 @@ export class Subscriber<T> {
   protected isStoped = false;
   catchError: boolean = false;
   constructor(
-    observerOrNext?: PartialObserver<T> | ((value: T) => void),
+    observerOrNext: PartialObserver<T> | ((value: T) => void),
     error?: (e?: any) => void,
     complete?: () => void
   ) {
     switch (arguments.length) {
-      case 0:
       case 1:
+        if (typeof observerOrNext === 'object') {
+          this._init(observerOrNext);
+        }
         break;
       default:
         if (typeof observerOrNext === 'function') {
           this._next = observerOrNext;
           error && this.setError(error);
           if (complete) this._complete = complete;
-        } else if (observerOrNext) {
-          const { next, error, complete } = observerOrNext;
-          if (next) this._next = next;
-          error && this.setError(error);
-          if (complete) this._complete = complete;
+        } else if (typeof observerOrNext === 'object') {
+          this._init(observerOrNext);
         } else {
           throw Error('空的订阅');
         }
     }
+  }
+
+  private _init(observerOrNext: PartialObserver<T>) {
+    const { next, error, complete } = observerOrNext;
+    if (next) this._next = next;
+    error && this.setError(error);
+    if (complete) this._complete = complete;
   }
 
   private setError(error: (err: any) => void) {
@@ -50,7 +56,7 @@ export class Subscriber<T> {
     this.isStoped = true;
   }
 
-  _next(value: T): void {}
-  _error(error: any): void {}
-  _complete(): void {}
+  protected _next(value: T): void {}
+  protected _error(error: any): void {}
+  protected _complete(): void {}
 }
